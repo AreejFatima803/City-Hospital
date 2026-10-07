@@ -1,0 +1,26 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>City Hospital Admin</title>
+<style>
+body{font-family:system-ui,sans-serif;margin:0;background:#fff5f5;color:#222}
+header{background:#C62828;color:#fff;padding:16px 24px;font-size:20px;font-weight:600}
+main{padding:24px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;background:#fff;box-shadow:0 1px 4px #0002}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid #eee;font-size:14px}
+th{background:#FFEBEE;color:#B71C1C}
+select{padding:4px}
+</style></head><body>
+<header>City Hospital - Bookings</header>
+<main><table><thead><tr><th>Date</th><th>Patient</th><th>Specialization</th><th>Doctor</th><th>Service</th><th>Status</th></tr></thead><tbody id="rows"></tbody></table></main>
+<script>
+const key = sessionStorage.key || (sessionStorage.key = prompt('Admin key'));
+const H = {'x-admin-key': key, 'Content-Type': 'application/json'};
+async function load(){
+  const r = await fetch('/api/admin/bookings',{headers:H});
+  if(!r.ok){ sessionStorage.removeItem('key'); document.body.append('Wrong admin key. Reload to try again.'); return; }
+  const list = await r.json();
+  rows.innerHTML = list.map(b=>`<tr><td>${new Date(b.timestamp).toLocaleString()}</td><td>${b.user?.email||'-'}</td><td>${b.specialization}</td><td>${b.doctor?.name||'-'}</td><td>${b.serviceType}</td>
+  <td><select onchange="setStatus('${b._id}',this.value)">${['Pending','Confirmed','Cancelled'].map(s=>`<option ${s==b.status?'selected':''}>${s}</option>`).join('')}</select></td></tr>`).join('');
+}
+async function setStatus(id,status){ await fetch('/api/admin/bookings/'+id,{method:'PATCH',headers:H,body:JSON.stringify({status})}); }
+load();
+</script></body></html>
