@@ -3,17 +3,9 @@ on:
   workflow_dispatch:
     inputs:
       api_url:
-<<<<<<< HEAD
-        description: "Backend API URL (e.g. https://my-app.onrender.com/api or http://192.168.1.5:5000/api)"
-        required: true
-        default: "http://192.168.1.5:5000/api"
-  push:
-    branches: [main]
-=======
         description: "Backend API URL"
         required: true
         default: "http://192.168.199.231:5000/api"
->>>>>>> e23b0c50f82e8a951bdc63eb941f07dcc588f0c4
 
 jobs:
   build:
@@ -24,25 +16,6 @@ jobs:
         with: { distribution: temurin, java-version: "17" }
       - uses: subosito/flutter-action@v2
         with: { channel: stable }
-<<<<<<< HEAD
-      - name: Generate Android project
-        working-directory: app
-        run: flutter create . --platforms=android --org com.cityhospital
-      - name: Set API URL, internet permission, cleartext
-        working-directory: app
-        run: |
-          URL="${{ github.event.inputs.api_url || 'http://10.0.2.2:5000/api' }}"
-          sed -i "s|^const String baseUrl = .*|const String baseUrl = '${URL}';|" lib/api.dart
-          sed -i 's|<application|<uses-permission android:name="android.permission.INTERNET"/><application android:usesCleartextTraffic="true"|' android/app/src/main/AndroidManifest.xml
-      - run: flutter pub get
-        working-directory: app
-      - run: flutter build apk --release
-        working-directory: app
-      - uses: actions/upload-artifact@v4
-        with:
-          name: city-hospital-apk
-          path: app/build/app/outputs/flutter-apk/app-release.apk
-=======
       - name: Build APK
         run: |
           PUB=$(find . -name pubspec.yaml -not -path "./.*" | head -1)
@@ -61,4 +34,3 @@ jobs:
         with:
           name: city-hospital-apk
           path: out/app-release.apk
->>>>>>> e23b0c50f82e8a951bdc63eb941f07dcc588f0c4
